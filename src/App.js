@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 
 const App = () => {
   
-  const descr = ''
+  // const descr = ''
 
   const posts = [
   ]

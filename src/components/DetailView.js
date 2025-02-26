@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../client';
-import './DetailView.css'; 
+import './DetailView.css';
 
 const DetailView = () => {
     const { id } = useParams();
@@ -10,20 +10,20 @@ const DetailView = () => {
     const [comments, setComments] = useState([]); 
     const [newComment, setNewComment] = useState(''); 
 
-    const fetchComments = async () => {
-        const { data, error } = await supabase
-            .from('Comments')
-            .select('*')
-            .eq('postid', id);
-
-        if (error) {
-            console.error('Error fetching comments:', error);
-        } else {
-            setComments(data);
-        }
-    };
-
     useEffect(() => {
+        const fetchComments = async () => {
+            const { data, error } = await supabase
+                .from('Comments')
+                .select('*')
+                .eq('postid', id);
+
+            if (error) {
+                console.error('Error fetching comments:', error);
+            } else {
+                setComments(data);
+            }
+        };
+
         const fetchDetail = async () => {
             const { data, error } = await supabase
                 .from('Manure Posts')
@@ -41,7 +41,7 @@ const DetailView = () => {
 
         fetchComments();
         fetchDetail();
-    }, [id]);
+    }, [id]); // Only re-run effect when the 'id' changes
 
     const handleLikeClick = async () => {
         const newLikeCount = likeCount + 1; 
@@ -63,7 +63,16 @@ const DetailView = () => {
 
         setNewComment('');
         
-        fetchComments();
+        // Re-fetch comments after adding a new one
+        const { data, error } = await supabase
+            .from('Comments')
+            .select('*')
+            .eq('postid', id);
+        if (error) {
+            console.error('Error fetching updated comments:', error);
+        } else {
+            setComments(data);
+        }
     };
 
     const handleEditClick = () => {
@@ -116,4 +125,4 @@ const DetailView = () => {
     );
 };
 
-export default DetailView; // Ensure this is the default export
+export default DetailView;
